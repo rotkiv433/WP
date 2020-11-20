@@ -13,16 +13,42 @@
 <header>
     <h1>Courses List</h1>
 </header>
-<form th:method="POST">
-    <h2>Choose course:</h2>
 
-    <th:block th:each="course : ${courses}">
-        <input type="radio" name="courseId" th:value="${course.getCourseId()}">
-        <span th:text="${course.getName()}"/><br/>
-    </th:block>
+<table>
+    <thead>
+    <tr>
+        <th scope="col">Course</th>
+    </tr>
+    </thead>
+    <tbody>
+    <form action="/courses/add-student" method="POST">
 
-    <br/>
-        <input type="submit" value="Submit"/>
+        <h2>Choose course:</h2>
+
+        <tr th:each="course : ${courses}">
+            <td><input type="radio" name="courseId" th:value="${course.getCourseId()}">
+            <span th:text="${course.getName()}"/></td>
+
+            <td>
+                <a th:href="@{'/courses/delete/{id}' (id=${course.getCourseId()})}">Delete</a>
+            </td>
+            <td>
+                <a th:href="@{'/courses/edit-form/{id}' (id=${course.getCourseId()})}">Edit</a>
+            </td>
+        </tr>
+
+        <input type="submit" value="Submit" name="submitBtn"/>
+
+    </form>
+
+    <p th:text="${param.error}" style="color: red"></p>
+    </tbody>
+</table>
+
+
+
+<form>
+    <a href="/courses/add-course">Add new Course</a>
 </form>
 </body>
 </html>

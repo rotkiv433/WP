@@ -2,23 +2,29 @@ package mk.ukim.finki.wp.lab.service.impl;
 
 import mk.ukim.finki.wp.lab.model.Course;
 import mk.ukim.finki.wp.lab.model.Student;
+import mk.ukim.finki.wp.lab.model.Teacher;
 import mk.ukim.finki.wp.lab.model.exceptions.CourseNotFoundException;
 import mk.ukim.finki.wp.lab.model.exceptions.StudentNotFoundException;
+import mk.ukim.finki.wp.lab.model.exceptions.TeacherNotFoundException;
 import mk.ukim.finki.wp.lab.respository.CourseRepository;
 import mk.ukim.finki.wp.lab.service.CourseService;
 import mk.ukim.finki.wp.lab.service.StudentService;
+import mk.ukim.finki.wp.lab.service.TeacherService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
+    private final TeacherService teacherService;
     private final StudentService studentService;
 
-    public CourseServiceImpl(CourseRepository courseRepository, StudentService studentService) {
+    public CourseServiceImpl(CourseRepository courseRepository, TeacherService teacherService, StudentService studentService) {
         this.courseRepository = courseRepository;
+        this.teacherService = teacherService;
         this.studentService = studentService;
     }
 
@@ -56,6 +62,25 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Course findById(Long courseId) {
         return courseRepository.findById(courseId);
+    }
+
+    @Override
+    public Optional<Course> saveCourse(String name, String description, Long teacherId) {
+        Teacher teacher = teacherService.findById(teacherId).
+                orElseThrow(TeacherNotFoundException::new);
+        Course course = new Course(name, description, teacher);
+        course.setStudents(this.studentService.listAll());
+
+
+        return this.courseRepository.save(course);
+
+    }
+
+
+    @Override
+    public void deleteCourse(Long id) {
+        Course temp = this.courseRepository.findById(id);
+        this.courseRepository.deleteById(temp);
     }
 
 

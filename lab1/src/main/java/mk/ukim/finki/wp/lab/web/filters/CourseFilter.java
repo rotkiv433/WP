@@ -17,8 +17,11 @@ public class CourseFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String path = request.getServletPath();
         Long courseId = (Long) request.getSession().getAttribute("courseId");
-        if(courseId==null && !"/listCourses".equals(path)){
-            response.sendRedirect("/listCourses");
+        if(courseId==null && (!"/courses".equals(path)
+                    && !path.contains("/courses/add")
+                    && !path.contains("/courses/delete")
+                    && !path.contains("/courses/edit"))){
+            response.sendRedirect("/courses");
         }else {
             filterChain.doFilter(servletRequest,servletResponse);
         }
